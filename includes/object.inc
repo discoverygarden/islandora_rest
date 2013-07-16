@@ -52,7 +52,7 @@ function islandora_rest_object_get_response(array $parameters) {
     'pid' => $object->id,
     'label' => $object->label,
     'owner' => $object->owner,
-    'model' => $object->models,
+    'models' => $object->models,
     'state' => $object->state,
     'created' => (string) $object->createdDate,
     'modified' => (string) $object->lastModifiedDate,

@@ -22,19 +22,19 @@ CONTENTS OF THIS FILE
    * [List Existing Relationships](#list-existing-relationships)
    * [Add A New Relationship](#add-a-new-relationship)
    * [Remove An Existing Relationship](#remove-an-existing-relationship)
-   * [Describe A Existing Data-Stream](#describe-a-existing-data-stream)
-   * [Create A New Data-Stream](#create-a-new-data-stream)
-   * [Modify An Existing Data-Streams Properties And Content](#modify-an-existing-data-streams-properties-and-content)
-   * [Delete An Existing Data-Stream](#delete-an-existing-data-stream)
+   * [Describe A Existing Datastream](#describe-a-existing-datastream)
+   * [Create A New Datastream](#create-a-new-datastream)
+   * [Modify An Existing Datastreams Properties And Content](#modify-an-existing-datastreams-properties-and-content)
+   * [Delete An Existing Datastream](#delete-an-existing-datastream)
  * [Todo](#todo)
 
 SUMMARY
 -------
 This module provides a number of REST end points for fetching/manipulating
-objects, data-streams, and object relationships from islandora.
+objects, datastreams, and object relationships from islandora.
 
 The basic structure of the module is such that we define Drupal Menu’s for each
-resource type. Currently the resources are __objects__, __data-streams__,
+resource type. Currently the resources are __objects__, __datastreams__,
 __relationships__, and __solr__. Each Menu defines a callback that generates the
 HTTP responses for any HTTP Methods requested of the given resource
 __GET__, __PUT__, __POST__, __DELETE__.
@@ -73,7 +73,7 @@ Assumes the following global XACML polices have been removed from:
 $FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
 
 * deny-policy-management-if-not-administrator.xml
-* deny-purge-data-stream-if-active-or-inactive.xml
+* deny-purge-datastream-if-active-or-inactive.xml
 * deny-purge-object-if-active-or-inactive.xml
 
 This module will still function with those policies in place but the tests this
@@ -100,13 +100,13 @@ Permissions are enabled.
 DOCUMENTATION
 -------------
 
-In an effort to simplify the __data-stream__ REST end-point multi-part responses
+In an effort to simplify the __datastream__ REST end-point multi-part responses
 for __GET__ requests were investigated. With the intention of returning both
 the content and properties through a single request. While this is possible it
 is not well supported by jQuery, there exists a
 [plug-in](http://archive.plugins.jquery.com/project/mpAjax), I am unsure if this
 plugin works with all browsers. To get around this issue __GET__ requests for a
-__data-stream__ can return either the content or properties but not both for the
+__datastream__ can return either the content or properties but not both for the
 moment.
 
 
@@ -117,7 +117,7 @@ actually intended.
 
 
 At the moment multi-part __PUT__ requests such as the one required to modify an
-existing __data-stream's__ content and properties are **not implemented** you
+existing __datastream's__ content and properties are **not implemented** you
 can mock these __PUT__ requests using aforementioned mechanism. __POST__ and
 include an additional form-data field **method** with the value __PUT__.
 
@@ -152,7 +152,7 @@ permission to perform that action, or XACML denied the action for that user.
 #### Response: 404 Not Found
 ##### No response body.
 In general a 404 will occur, when a user tries to perform an action on a
-object or data-stream that doesn't not exist. Or XACML is hiding that
+object or datastream that doesn't not exist. Or XACML is hiding that
 object or datastream from the user. 404 Responses will only be returned
 if the users was determined to have permission to perform the requested
 action.
@@ -193,7 +193,7 @@ Accept: application/json
 | owner         | The objects owner
 | created       | Created date of the object, yyyy-MM-ddTHH:mm:ssZ
 | modified      | Last modified date of the object, yyyy-MM-ddTHH:mm:ssZ
-| data-streams   | Any array of objects each describing a data stream. See GET data-stream for more details.
+| datastreams   | Any array of objects each describing a data stream. See GET datastream for more details.
 
 #### Example Response
 ```JSON
@@ -205,7 +205,7 @@ Accept: application/json
  "state": "A",
  "created": "2013-05-27T09:53:39.286Z",
  "modified": "2013-06-24T04:20:26.190Z",
- "data-streams": [{
+ "datastreams": [{
    "dsid": "RELS-EXT",
    "label": "Fedora Object to Object Relationship Metadata.",
    "state": "A",
@@ -394,7 +394,7 @@ DELETE
 #### Response: 200 Ok
 ##### No response body.
 
-## Describe A Existing Data-Stream
+## Describe A Existing Datastream
 #### URL syntax
 islandora/rest/v1/object/{pid}/datastream/{dsid}?[content, true][version]
 
@@ -409,7 +409,7 @@ Accept: application/json
 | ------------- | ------------------------------------------------------------ |
 | pid           | Persistent identifier of the object
 | dsid          | Data stream Identifier.
-| content       | True to return the data-stream’s content, False to return it’s properties.
+| content       | True to return the datastream’s content, False to return it’s properties.
 | version       | The version of the datastream to return, identified by its created date of the datastream in ISO 8601 format yyyy-MM-ddTHH:mm:ssZ (optional) If not given the latest version of the data stream will be returned.
 
 #### Response: 200 OK
@@ -419,15 +419,15 @@ version of the data stream, these values are limited to a subset described here.
 
 | Name          | Description                                                  |
 | ------------- | ------------------------------------------------------------ |
-| dsid          | The data-stream's persistent identifier
-| label         | The data-stream's label
-| size          | The data-stream's size in bytes
-| state         | The data-stream’s state, either “A”, “I”, “D”
-| mimetype      | The data-stream’s mimetype
-| controlGroup  | The data-stream's control group, either X, M, E, R
+| dsid          | The datastream's persistent identifier
+| label         | The datastream's label
+| size          | The datastream's size in bytes
+| state         | The datastream’s state, either “A”, “I”, “D”
+| mimetype      | The datastream’s mimetype
+| controlGroup  | The datastream's control group, either X, M, E, R
 | versionable   | A boolean value if the datastream is versionable
 | created       | Created date of the datastream, yyyy-MM-ddTHH:mm:ssZ
-| versions      | Any array of objects each describing each data-stream version not including the latest, contains a subset of the fields described here.
+| versions      | Any array of objects each describing each datastream version not including the latest, contains a subset of the fields described here.
 
 #### Example Response
 ```JSON
@@ -450,10 +450,10 @@ version of the data stream, these values are limited to a subset described here.
   }]
 }
 ```
-If content is true the data-stream’s content is returned, and the appropriate
-content-type will be set by the server for the data-stream’s content.
+If content is true the datastream’s content is returned, and the appropriate
+content-type will be set by the server for the datastream’s content.
 
-## Create A New Data-Stream
+## Create A New Datastream
 
 #### URL syntax
 islandora/rest/v1/object/{pid}/datastream
@@ -467,24 +467,24 @@ Accept: application/json
 #### Get Variables
 | Name          | Description                                                  |
 | ------------- | ------------------------------------------------------------ |
-| pid           | Persistent identifier of the object to add the data-stream to.
+| pid           | Persistent identifier of the object to add the datastream to.
 
 #### Post Variables
 | Name          | Description                                                  |
 | ------------- | ------------------------------------------------------------ |
-| dsid          | The new data-stream's persistent identifier
-| label         | The new data-stream's label (optional)
-| state         | The new data-stream’s state, either “A”, “I”, “D” (optional) Defaults to “A”
-| mimetype      | The new data-stream’s mime type (optional) if not provided then it is guessed from the uploaded file.
-| controlGroup  | The new data-stream's control group, either X, M, E, R
+| dsid          | The new datastream's persistent identifier
+| label         | The new datastream's label (optional)
+| state         | The new datastream’s state, either “A”, “I”, “D” (optional) Defaults to “A”
+| mimetype      | The new datastream’s mime type (optional) if not provided then it is guessed from the uploaded file.
+| controlGroup  | The new datastream's control group, either X, M, E, R
 | versionable   | A boolean value if the datastream is versionable (optional) Defaults to true
-| multipart file as request content | File to use as the data-stream’s content
+| multipart file as request content | File to use as the datastream’s content
 
 #### Response: 201 Created
 ##### Content-Type: application/json
 Returns the same response as a [GET Datastream](#response-200-ok-5) request.
 
-## Modify An Existing Data-Streams Properties And Content
+## Modify An Existing Datastreams Properties And Content
 
 #### URL syntax
 islandora/rest/v1/object/{pid}/datastream/{dsid}
@@ -498,15 +498,15 @@ Accept: application/json
 #### Get Variables
 | Name          | Description                                                  |
 | ------------- | ------------------------------------------------------------ |
-| pid           | Persistent identifier of the object to add the data-stream to.
-| dsid          | The persistent data-stream identifier.
+| pid           | Persistent identifier of the object to add the datastream to.
+| dsid          | The persistent datastream identifier.
 
 #### Request Body Variables
 | Name          | Description                                                  |
 | ------------- | ------------------------------------------------------------ |
-| label         | The data-stream's new label (optional)
-| state         | The data-stream’s new state, either “A”, “I”, “D” (optional)
-| mimetype      | The new data-stream’s mime type (optional) if not provided then it is guessed from the uploaded file.
+| label         | The datastream's new label (optional)
+| state         | The datastream’s new state, either “A”, “I”, “D” (optional)
+| mimetype      | The new datastream’s mime type (optional) if not provided then it is guessed from the uploaded file.
 | versionable   | A boolean value if the datastream is versionable (optional) Defaults to true
 | multipart file as request content | File to replace existing datastream (for Managed datastreams)
 
@@ -514,7 +514,7 @@ Accept: application/json
 ##### Content-Type: application/json
 Returns the same response as a [GET Datastream](#response-200-ok-5) request.
 
-## Delete An Existing Data-Stream
+## Delete An Existing Datastream
 
 #### URL syntax
 islandora/rest/v1/object/{pid}/datastream/{dsid}
@@ -561,9 +561,12 @@ those respective end points. See the documentation for SOLR for more info.
 
 TODO
 ----
-- [ ] Update Solution Packs to use data-stream ingested/modified hooks rather
+- [ ] Update Solution Packs to use datastream ingested/modified hooks rather
       than object ingested hooks.
 - [ ] Move DC transform logic out of XML Forms and have it use ingested/modified
       hooks instead.
-- [ ] Add support for purging previous versions of data-streams
+- [ ] Add support for purging previous versions of datastreams
+- [ ] Add checksum support to datastream end-points.
+- [ ] Add describe json end-point for the repository.
 - [ ] Make PUT requests support multi-part form data, populate $_FILES.
+- [ ] Investigate a making a jQuery plugin to ease interaction with REST API?
