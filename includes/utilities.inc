@@ -8,8 +8,8 @@
 /**
  * Gets the response for the given resource.
  *
- * @param string $resource
- *   The resource to generate the response for.
+ * @param string $endpoint
+ *   The rest end-point to generate the response for.
  * @param array $path_parameters
  *   The GET parameters that were embedded within the path of the URL. They
  *   typically contain the following fields:
@@ -20,23 +20,26 @@
  * @return string
  *   A JSON encode string, representing the response for the requested resource.
  */
-function islandora_rest_get_response($resource, array $path_parameters) {
-  module_load_include('inc', 'islandora_rest', "includes/{$resource}");
+function islandora_rest_get_response($endpoint, array $path_parameters) {
+  module_load_include('inc', 'islandora_rest', "includes/{$endpoint}");
   $path_parameters = array_filter($path_parameters);
   $request_method = islandora_rest_get_request_method();
   list($pid, $dsid) = islandora_rest_get_pid_dsid_from_path_parameters($path_parameters);
   try {
-    // Check Drupal Permissions.
-    islandora_rest_require_access($resource, $request_method, $pid, $dsid);
+    // Fetch the requested resource. Throws 404, if the resource is not found.
+    $resource = islandora_rest_get_requested_resource($pid, $dsid);
+    // Check Drupal Permissions. Throws 401, 403, if access is denied.
+    islandora_rest_require_access($endpoint, $request_method, $resource);
     // Generate the Response.
-    $rest_endpoint = "islandora_rest_{$resource}_{$request_method}_response";
-    if (function_exists($rest_endpoint)) {
+    $response_function = "islandora_rest_{$endpoint}_{$request_method}_response";
+    if (function_exists($response_function)) {
       $parameters = array(
         'path' => $path_parameters,
         'request' => islandora_rest_get_request_parameters(),
-        'resource' => islandora_rest_get_requested_resource($pid, $dsid),
+        'resource' => $resource,
       );
-      $response = $rest_endpoint($parameters);
+      // Can throw 400, 401, 500, etc.
+      $response = $response_function($parameters);
     }
   }
   catch (Exception $e) {
@@ -60,20 +63,18 @@ function islandora_rest_get_response($resource, array $path_parameters) {
  * logged in throw a 'Unauthorized' exception, if they are logged in throw a
  * 'Forbidden' exception.
  *
- * @param string $resource
- *   The resource to test for accessiblity.
+ * @param string $endpoint
+ *   The rest end-point to generate the response for.
  * @param array $request_method
  *   The request method (GET/POST/PUT/DELETE).
- * @param string $pid
- *   The PID of the requested resource (optional).
- * @param string $dsid
- *   The DSID  the requested resource (optional).
+ * @param object $resource
+ *   The requested Fedora object/datastream (optional).
  *
  * @return bool
  *   TRUE if all parameters are present FALSE otherwise.
  */
-function islandora_rest_require_access($resource, $request_method, $pid = FALSE, $dsid = FALSE) {
-  if (!islandora_rest_accessible($resource, $request_method, $pid, $dsid)) {
+function islandora_rest_require_access($endpoint, $request_method, $resource = NULL) {
+  if (!islandora_rest_accessible($endpoint, $request_method, $resource)) {
     if (user_is_anonymous()) {
       throw new Exception('Unauthorized', 401);
     }
@@ -86,32 +87,28 @@ function islandora_rest_require_access($resource, $request_method, $pid = FALSE,
 /**
  * Check module permissions etc, to see if the current action is allowed.
  *
- * @param string $resource
- *   The resource to test for accessiblity.
+ * @param string $endpoint
+ *   The rest end-point to generate the response for.
  * @param array $request_method
  *   The request method (GET/POST/PUT/DELETE)
- * @param string $pid
- *   The PID of the requested resource (optional).
- * @param string $dsid
- *   The DSID  the requested resource (optional).
+ * @param object $resource
+ *   The requested Fedora object/datastream (optional).
  *
  * @return bool
  *   TRUE if the user is allowed to access the rest end-point, FALSE otherwise.
  */
-function islandora_rest_accessible($resource, $request_method, $pid = FALSE, $dsid = FALSE) {
+function islandora_rest_accessible($endpoint, $request_method, $resource = FALSE) {
   // SOLR resource is a special exception in that it's permissions are defined
   // by another module.
-  if ($resource == 'solr') {
+  if ($endpoint == 'solr') {
     return islandora_rest_solr_access();
   }
-  $perm = islandora_rest_resource_access_permission($resource, $request_method);
-  if ($dsid) {
-    $object = islandora_object_load($pid);
-    return islandora_datastream_access($perm, $object[$dsid]);
+  $perm = islandora_rest_resource_access_permission($endpoint, $request_method);
+  if (is_subclass_of($resource, 'AbstractObject')) {
+    return islandora_object_access($perm, $resource);
   }
-  elseif ($pid) {
-    $object = islandora_object_load($pid);
-    return islandora_object_access($perm, $object);
+  elseif (is_subclass_of($resource, 'AbstractDatastream')) {
+    return islandora_datastream_access($perm, $resource);
   }
   return user_access($perm);
 }
@@ -141,13 +138,13 @@ function islandora_rest_get_pid_dsid_from_path_parameters(array $path_parameters
 /**
  * Gets the defined access permission for the given resource and request method.
  *
- * @param string $resource
- *   The resource to test for accessiblity.
+ * @param string $endpoint
+ *   The rest end-point to generate the response for.
  * @param array $request_method
  *   The request method (GET/POST/PUT/DELETE).
  */
-function islandora_rest_resource_access_permission($resource, $request_method) {
-  $perm = strtoupper("PERM_{$resource}_{$request_method}");
+function islandora_rest_resource_access_permission($endpoint, $request_method) {
+  $perm = strtoupper("PERM_{$endpoint}_{$request_method}");
   return defined($perm) ? constant($perm) : FALSE;
 }
 
@@ -243,7 +240,7 @@ function islandora_rest_get_requested_resource($pid = FALSE, $dsid = FALSE) {
     }
     else {
       $message = t('Failed to retrieve the requested object: "@pid"', array(
-                   '@pid' => $path_parameters['pid']));
+                   '@pid' => $pid));
     }
     throw new Exception($message, $e->getCode(), $e);
   }

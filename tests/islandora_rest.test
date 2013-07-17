@@ -300,7 +300,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
 
     // Test POST Datastream as anonymous.
     $data = array('pid' => 'test:post', 'label' => 'Test REST POST Datastream');
-    $response = $this->httpPost($path . '/NEW', $data);
+    $response = $this->httpPost($path, $data);
     $expected = array(
       'code' => 401,
       'content-type' => 'application/json; utf-8',
@@ -508,23 +508,23 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     // Mock the request via POST.
     $data = array(
       'method' => 'PUT',
-      'label' => 'New DC Label',
-      'file' => '@' . dirname(__FILE__) . '/fixtures/put_dc.xml',
+      'label' => 'New MODS Label',
+      'file' => '@' . dirname(__FILE__) . '/fixtures/put_mods.xml',
     );
-    $response = $this->httpPost($path . '/DC', $data);
+    $response = $this->httpPost($path . '/MODS', $data);
     $expected = array(
       'code' => 200,
       'content-type' => 'application/json; utf-8',
-      'response' => $this->mockDatastreamGetResponse('test:access', 'DC'),
+      'response' => $this->mockDatastreamGetResponse('test:access', 'MODS'),
     );
     $this->validateResponse($response, $expected);
     $object = islandora_object_load('test:access');
-    $xml = new SimpleXMLElement($object['DC']->content);
-    $title = (string) current($xml->xpath('//dc:title'));
-    $xml = new SimpleXMLElement(file_get_contents(dirname(__FILE__) . '/fixtures/put_dc.xml'));
-    $expected_title = (string) current($xml->xpath('//dc:title'));
+    $xml = new SimpleXMLElement($object['MODS']->content);
+    $title = (string) current($xml->xpath('//mods:title'));
+    $xml = new SimpleXMLElement(file_get_contents(dirname(__FILE__) . '/fixtures/put_mods.xml'));
+    $expected_title = (string) current($xml->xpath('//mods:title'));
     $this->assertEqual($title, $expected_title, 'Datastream content was updated.');
-    $this->assertEqual($object['DC']->label, 'New DC Label', 'Datastream properties were updated.');
+    $this->assertEqual($object['MODS']->label, 'New MODS Label', 'Datastream properties were updated.');
 
     // Test POST Datastream with the proper permissions, but missing field.
     $data = array(
@@ -685,7 +685,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->assertFalse($object, 'Object was not created');
 
     // Test DELETE Object without the proper permissions.
-    $response = $this->httpDelete(MENU_ISLANDORA_REST_OBJECT . '/test:post');
+    $response = $this->httpDelete(MENU_ISLANDORA_REST_OBJECT . '/test:access');
     $expected = array(
       'code' => 403,
       'content-type' => 'application/json; utf-8',
@@ -715,7 +715,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
 
     // Test POST Datastream without the proper permissions.
     $data = array('pid' => 'test:post', 'label' => 'Test REST POST Datastream');
-    $response = $this->httpPost($path . '/NEW', $data);
+    $response = $this->httpPost($path, $data);
     $expected = array(
       'code' => 403,
       'content-type' => 'application/json; utf-8',

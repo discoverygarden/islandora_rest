@@ -72,6 +72,7 @@ Assumes the following global XACML polices have been removed from:
 
 $FEDORA_HOME/data/fedora-xacml-policies/repository-policies/default
 
+* deny-inactive-or-deleted-objects-or-datastreams-if-not-administrator.xml
 * deny-policy-management-if-not-administrator.xml
 * deny-purge-datastream-if-active-or-inactive.xml
 * deny-purge-object-if-active-or-inactive.xml
@@ -153,9 +154,11 @@ permission to perform that action, or XACML denied the action for that user.
 ##### No response body.
 In general a 404 will occur, when a user tries to perform an action on a
 object or datastream that doesn't not exist. Or XACML is hiding that
-object or datastream from the user. 404 Responses will only be returned
-if the users was determined to have permission to perform the requested
-action.
+object or datastream from the user.
+
+404 Responses can be returned even if the user was **not** determined to have
+permission to perform the requested action, as the resource must be first
+fetched from fedora before the users permission can be determined.
 
 #### Response: 500 Internal Server Error
 ##### Content-Type: application/json
