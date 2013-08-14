@@ -7,21 +7,40 @@
 
 define('ISLANDORA_REST_VERSION', 'v1');
 define('ISLANDORA_REST_URL_PREFIX', 'islandora/rest/' . ISLANDORA_REST_VERSION);
-define('MENU_ISLANDORA_REST_OBJECT', ISLANDORA_REST_URL_PREFIX . '/object');
-define('MENU_ISLANDORA_REST_DATASTREAM', MENU_ISLANDORA_REST_OBJECT . '/%/datastream');
-define('MENU_ISLANDORA_REST_RELATIONSHIP', MENU_ISLANDORA_REST_OBJECT . '/%/relationship');
-define('MENU_ISLANDORA_REST_SOLR', ISLANDORA_REST_URL_PREFIX . '/solr');
-define('PERM_OBJECT_GET', 'view objects');
-define('PERM_OBJECT_POST', 'create objects');
-define('PERM_OBJECT_PUT', 'modify object properties');
-define('PERM_OBJECT_DELETE', 'delete objects');
-define('PERM_DATASTREAM_GET', 'view datastreams');
-define('PERM_DATASTREAM_POST', 'create datastreams');
-define('PERM_DATASTREAM_PUT', 'modify datastreams');
-define('PERM_DATASTREAM_DELETE', 'delete datastreams');
-define('PERM_RELATIONSHIP_GET', 'list relationships');
-define('PERM_RELATIONSHIP_POST', 'create relationships');
-define('PERM_RELATIONSHIP_DELETE', 'delete relationships');
+define('ISLANDORA_REST_OBJECT_MENU', ISLANDORA_REST_URL_PREFIX . '/object');
+define('ISLANDORA_REST_DATASTREAM_MENU', ISLANDORA_REST_OBJECT_MENU . '/%/datastream');
+define('ISLANDORA_REST_RELATIONSHIP_MENU', ISLANDORA_REST_OBJECT_MENU . '/%/relationship');
+define('ISLANDORA_REST_SOLR_MENU', ISLANDORA_REST_URL_PREFIX . '/solr');
+define('ISLANDORA_REST_OBJECT_GET_PERM', 'view objects');
+define('ISLANDORA_REST_OBJECT_POST_PERM', 'create objects');
+define('ISLANDORA_REST_OBJECT_PUT_PERM', 'modify object properties');
+define('ISLANDORA_REST_OBJECT_DELETE_PERM', 'delete objects');
+define('ISLANDORA_REST_DATASTREAM_GET_PERM', 'view datastreams');
+define('ISLANDORA_REST_DATASTREAM_POST_PERM', 'create datastreams');
+define('ISLANDORA_REST_DATASTREAM_PUT_PERM', 'modify datastreams');
+define('ISLANDORA_REST_DATASTREAM_DELETE_PERM', 'delete datastreams');
+define('ISLANDORA_REST_RELATIONSHIP_GET_PERM', 'list relationships');
+define('ISLANDORA_REST_RELATIONSHIP_POST_PERM', 'create relationships');
+define('ISLANDORA_REST_RELATIONSHIP_DELETE_PERM', 'delete relationships');
+
+// @codingStandardsIgnoreStart
+// XXX: This should be removed at some point in the future.
+define('MENU_ISLANDORA_REST_OBJECT', ISLANDORA_REST_OBJECT_MENU);
+define('MENU_ISLANDORA_REST_DATASTREAM', ISLANDORA_REST_DATASTREAM_MENU);
+define('MENU_ISLANDORA_REST_RELATIONSHIP', ISLANDORA_REST_RELATIONSHIP_MENU);
+define('MENU_ISLANDORA_REST_SOLR', ISLANDORA_REST_SOLR_MENU);
+define('PERM_OBJECT_GET', ISLANDORA_REST_OBJECT_GET_PERM);
+define('PERM_OBJECT_POST', ISLANDORA_REST_OBJECT_POST_PERM);
+define('PERM_OBJECT_PUT', ISLANDORA_REST_OBJECT_PUT_PERM);
+define('PERM_OBJECT_DELETE', ISLANDORA_REST_OBJECT_DELETE_PERM);
+define('PERM_DATASTREAM_GET', ISLANDORA_REST_DATASTREAM_GET_PERM);
+define('PERM_DATASTREAM_POST', ISLANDORA_REST_DATASTREAM_POST_PERM);
+define('PERM_DATASTREAM_PUT', ISLANDORA_REST_DATASTREAM_PUT_PERM);
+define('PERM_DATASTREAM_DELETE', ISLANDORA_REST_DATASTREAM_DELETE_PERM);
+define('PERM_RELATIONSHIP_GET', ISLANDORA_REST_RELATIONSHIP_GET_PERM);
+define('PERM_RELATIONSHIP_POST', ISLANDORA_REST_RELATIONSHIP_POST_PERM);
+define('PERM_RELATIONSHIP_DELETE', ISLANDORA_REST_RELATIONSHIP_DELETE_PERM);
+// @codingStandardsIgnoreEnd
 
 /**
  * Implements hook_menu().
@@ -30,24 +49,24 @@ function islandora_rest_menu() {
   // We don't use the access callback for any of the REST end-poinst as we can't
   // reliably return JSON from that point.
   return array(
-    MENU_ISLANDORA_REST_OBJECT => array(
+    ISLANDORA_REST_OBJECT_MENU => array(
       'page callback' => 'islandora_rest_object',
       'access callback' => TRUE,
       'type' => MENU_CALLBACK,
     ),
-    MENU_ISLANDORA_REST_DATASTREAM => array(
+    ISLANDORA_REST_DATASTREAM_MENU => array(
       'page callback' => 'islandora_rest_datastream',
       'page arguments' => array(4, 6),
       'access callback' => TRUE,
       'type' => MENU_CALLBACK,
     ),
-    MENU_ISLANDORA_REST_RELATIONSHIP => array(
+    ISLANDORA_REST_RELATIONSHIP_MENU => array(
       'page callback' => 'islandora_rest_relationship',
       'page arguments' => array(4),
       'access callback' => TRUE,
       'type' => MENU_CALLBACK,
     ),
-    MENU_ISLANDORA_REST_SOLR => array(
+    ISLANDORA_REST_SOLR_MENU => array(
       'page callback' => 'islandora_rest_solr',
       'access callback' => TRUE,
       'type' => MENU_CALLBACK,
@@ -60,47 +79,47 @@ function islandora_rest_menu() {
  */
 function islandora_rest_permission() {
   return array(
-    PERM_OBJECT_GET => array(
+    ISLANDORA_REST_OBJECT_GET_PERM => array(
       'title' => t('View objects'),
       'description' => t('Allows users to fetch an objects properties and list its datastreams.'),
     ),
-    PERM_OBJECT_POST => array(
+    ISLANDORA_REST_OBJECT_POST_PERM => array(
       'title' => t('Create objects'),
       'description' => t('Allows users to create objects.'),
     ),
-    PERM_OBJECT_PUT => array(
+    ISLANDORA_REST_OBJECT_PUT_PERM => array(
       'title' => t('Modify object properties'),
       'description' => t('Allows users to modify an objects properites.'),
     ),
-    PERM_OBJECT_DELETE => array(
+    ISLANDORA_REST_OBJECT_DELETE_PERM => array(
       'title' => t('Delete objects'),
       'description' => t('Allows users to delete objects.'),
     ),
-    PERM_DATASTREAM_GET => array(
+    ISLANDORA_REST_DATASTREAM_GET_PERM => array(
       'title' => t('View datastreams'),
       'description' => t('Allows users to get a given datastream content and properties.'),
     ),
-    PERM_DATASTREAM_POST => array(
+    ISLANDORA_REST_DATASTREAM_POST_PERM => array(
       'title' => t('Create datastreams'),
       'description' => t('Allows users to create datastreams.'),
     ),
-    PERM_DATASTREAM_PUT => array(
+    ISLANDORA_REST_DATASTREAM_PUT_PERM => array(
       'title' => t('Modify datastreams'),
       'description' => t('Allows users to modify existing datastreams and their properties.'),
     ),
-    PERM_DATASTREAM_DELETE => array(
+    ISLANDORA_REST_DATASTREAM_DELETE_PERM => array(
       'title' => t('Delete datastreams'),
       'description' => t('Allows users to delete datastreams.'),
     ),
-    PERM_RELATIONSHIP_GET => array(
+    ISLANDORA_REST_RELATIONSHIP_GET_PERM => array(
       'title' => t('List relationships'),
       'description' => t('Allows users to list an objects relationships.'),
     ),
-    PERM_RELATIONSHIP_POST => array(
+    ISLANDORA_REST_RELATIONSHIP_POST_PERM => array(
       'title' => t('Create relationships'),
       'description' => t('Allows users to create new relationships.'),
     ),
-    PERM_RELATIONSHIP_DELETE => array(
+    ISLANDORA_REST_RELATIONSHIP_DELETE_PERM => array(
       'title' => t('Delete relationships'),
       'description' => t('Allows users to delete existing relationships'),
     ),

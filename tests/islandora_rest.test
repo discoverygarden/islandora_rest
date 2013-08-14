@@ -237,7 +237,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     // Test all the rest end-points as an anonymous user.
     // -------------------------------------------------------------------------
     // Test GET Object as anonymous.
-    $response = $this->httpGet(MENU_ISLANDORA_REST_OBJECT . '/test:access');
+    $response = $this->httpGet(ISLANDORA_REST_OBJECT_MENU . '/test:access');
     $expected = array(
       'code' => 401,
       'content-type' => 'application/json; utf-8',
@@ -247,7 +247,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
 
     // Test PUT Object as anonymous.
     $data = array('label' => 'New Label');
-    $response = $this->httpPut(MENU_ISLANDORA_REST_OBJECT . '/test:access', $data);
+    $response = $this->httpPut(ISLANDORA_REST_OBJECT_MENU . '/test:access', $data);
     $expected = array(
       'code' => 401,
       'content-type' => 'application/json; utf-8',
@@ -257,7 +257,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
 
     // Test POST Object as anonymous.
     $data = array('pid' => 'test:post', 'label' => 'Test REST POST Object');
-    $response = $this->httpPost(MENU_ISLANDORA_REST_OBJECT, $data);
+    $response = $this->httpPost(ISLANDORA_REST_OBJECT_MENU, $data);
     $expected = array(
       'code' => 401,
       'content-type' => 'application/json; utf-8',
@@ -268,7 +268,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->assertFalse($object, 'Object was not created');
 
     // Test DELETE Object as anonymous.
-    $response = $this->httpDelete(MENU_ISLANDORA_REST_OBJECT . '/test:access');
+    $response = $this->httpDelete(ISLANDORA_REST_OBJECT_MENU . '/test:access');
     $expected = array(
       'code' => 401,
       'content-type' => 'application/json; utf-8',
@@ -279,7 +279,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->assertTrue(is_object($object), 'Object was not deleted');
 
     // Test GET Datastream as anonymous.
-    $path = str_replace('%', 'test:access', MENU_ISLANDORA_REST_DATASTREAM);
+    $path = str_replace('%', 'test:access', ISLANDORA_REST_DATASTREAM_MENU);
     $response = $this->httpGet($path . '/DC');
     $expected = array(
       'code' => 401,
@@ -322,7 +322,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->assertFalse(empty($object['RELS-EXT']), 'Datastream was not deleted');
 
     // Test GET Relationship as anonymous.
-    $path = str_replace('%', 'test:access', MENU_ISLANDORA_REST_RELATIONSHIP);
+    $path = str_replace('%', 'test:access', ISLANDORA_REST_RELATIONSHIP_MENU);
     $response = $this->httpGet($path);
     $expected = array(
       'code' => 401,
@@ -369,7 +369,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     // listed for an 'administrator' user.
     // -------------------------------------------------------------------------
     $this->drupalLogin($this->admin);
-    $response = $this->httpGet(MENU_ISLANDORA_REST_OBJECT . '/test:access');
+    $response = $this->httpGet(ISLANDORA_REST_OBJECT_MENU . '/test:access');
     $expected = array(
       'code' => 200,
       'content-type' => 'application/json; utf-8',
@@ -381,22 +381,22 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     // Test all the rest end-points with a user who has full access.
     // -------------------------------------------------------------------------
     $account = $this->drupalCreateUser(array(
-                 PERM_OBJECT_GET,
-                 PERM_OBJECT_POST,
-                 PERM_OBJECT_PUT,
-                 PERM_OBJECT_DELETE,
-                 PERM_DATASTREAM_GET,
-                 PERM_DATASTREAM_POST,
-                 PERM_DATASTREAM_PUT,
-                 PERM_DATASTREAM_DELETE,
-                 PERM_RELATIONSHIP_GET,
-                 PERM_RELATIONSHIP_POST,
-                 PERM_RELATIONSHIP_DELETE,
+                 ISLANDORA_REST_OBJECT_GET_PERM,
+                 ISLANDORA_REST_OBJECT_POST_PERM,
+                 ISLANDORA_REST_OBJECT_PUT_PERM,
+                 ISLANDORA_REST_OBJECT_DELETE_PERM,
+                 ISLANDORA_REST_DATASTREAM_GET_PERM,
+                 ISLANDORA_REST_DATASTREAM_POST_PERM,
+                 ISLANDORA_REST_DATASTREAM_PUT_PERM,
+                 ISLANDORA_REST_DATASTREAM_DELETE_PERM,
+                 ISLANDORA_REST_RELATIONSHIP_GET_PERM,
+                 ISLANDORA_REST_RELATIONSHIP_POST_PERM,
+                 ISLANDORA_REST_RELATIONSHIP_DELETE_PERM,
                ));
     $this->drupalLogin($account);
 
     // Test GET Object as a non-administrator user.
-    $response = $this->httpGet(MENU_ISLANDORA_REST_OBJECT . '/test:access');
+    $response = $this->httpGet(ISLANDORA_REST_OBJECT_MENU . '/test:access');
     $expected = array(
       'code' => 200,
       'content-type' => 'application/json; utf-8',
@@ -409,7 +409,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
 
     // Test PUT Object with the proper permissions.
     $data = array('label' => 'New Label');
-    $response = $this->httpPut(MENU_ISLANDORA_REST_OBJECT . '/test:access', $data);
+    $response = $this->httpPut(ISLANDORA_REST_OBJECT_MENU . '/test:access', $data);
     $object = islandora_object_load('test:access');
     $expected = array(
       'code' => 200,
@@ -426,7 +426,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
 
     // Test POST Object with the proper permissions.
     $data = array('pid' => 'test:post', 'label' => 'Test REST POST Object');
-    $response = $this->httpPost(MENU_ISLANDORA_REST_OBJECT, $data);
+    $response = $this->httpPost(ISLANDORA_REST_OBJECT_MENU, $data);
     $expected = array(
       'code' => 201,
       'content-type' => 'application/json; utf-8',
@@ -437,7 +437,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->assertTrue(is_object($object), 'Object was successfully created');
 
     // Test DELETE Object with the proper permissions.
-    $response = $this->httpDelete(MENU_ISLANDORA_REST_OBJECT . '/test:post');
+    $response = $this->httpDelete(ISLANDORA_REST_OBJECT_MENU . '/test:post');
     $expected = array(
       'code' => 200,
     );
@@ -446,7 +446,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->assertFalse($object, 'Object was successfully purged');
 
     // Test GET Datastream Properties with the proper permissions.
-    $path = str_replace('%', 'test:access', MENU_ISLANDORA_REST_DATASTREAM);
+    $path = str_replace('%', 'test:access', ISLANDORA_REST_DATASTREAM_MENU);
     $options = array(
       'query' => array(
         'content' => 'false',
@@ -461,7 +461,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->validateResponse($response, $expected);
 
     // Test GET Datastream Version Properties with the proper permissions.
-    $path = str_replace('%', 'test:access', MENU_ISLANDORA_REST_DATASTREAM);
+    $path = str_replace('%', 'test:access', ISLANDORA_REST_DATASTREAM_MENU);
     $expected = $this->mockDatastreamGetResponse('test:access', 'RELS-EXT', FALSE);
     $options = array(
       'query' => array(
@@ -478,7 +478,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->validateResponse($response, $expected);
 
     // Test GET Datastream Content with the proper permissions.
-    $path = str_replace('%', 'test:access', MENU_ISLANDORA_REST_DATASTREAM);
+    $path = str_replace('%', 'test:access', ISLANDORA_REST_DATASTREAM_MENU);
     $response = $this->httpGet($path . '/DC');
     $expected = array(
       'code' => 200,
@@ -488,7 +488,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->validateResponse($response, $expected);
 
     // Test GET Datastream Versioned Content with the proper permissions.
-    $path = str_replace('%', 'test:access', MENU_ISLANDORA_REST_DATASTREAM);
+    $path = str_replace('%', 'test:access', ISLANDORA_REST_DATASTREAM_MENU);
     $expected = $this->mockDatastreamGetResponse('test:access', 'RELS-EXT', FALSE);
     $options = array(
       'query' => array(
@@ -613,7 +613,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->assertFalse(isset($object['NEW']), 'Datastream was deleted');
 
     // Test GET Relationship with the proper permissions.
-    $path = str_replace('%', 'test:access', MENU_ISLANDORA_REST_RELATIONSHIP);
+    $path = str_replace('%', 'test:access', ISLANDORA_REST_RELATIONSHIP_MENU);
     $response = $this->httpGet($path);
     $expected = array(
       'code' => 200,
@@ -684,7 +684,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->drupalLogin($account);
 
     // Test GET Object without proper permission.
-    $response = $this->httpGet(MENU_ISLANDORA_REST_OBJECT . '/test:access');
+    $response = $this->httpGet(ISLANDORA_REST_OBJECT_MENU . '/test:access');
     $expected = array(
       'code' => 403,
       'content-type' => 'application/json; utf-8',
@@ -694,7 +694,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
 
     // Test PUT Object without the proper permissions.
     $data = array('label' => 'New Label');
-    $response = $this->httpPut(MENU_ISLANDORA_REST_OBJECT . '/test:access', $data);
+    $response = $this->httpPut(ISLANDORA_REST_OBJECT_MENU . '/test:access', $data);
     $expected = array(
       'code' => 403,
       'content-type' => 'application/json; utf-8',
@@ -704,7 +704,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
 
     // Test POST Object without the proper permissions.
     $data = array('pid' => 'test:post', 'label' => 'Test REST POST Object');
-    $response = $this->httpPost(MENU_ISLANDORA_REST_OBJECT, $data);
+    $response = $this->httpPost(ISLANDORA_REST_OBJECT_MENU, $data);
     $expected = array(
       'code' => 403,
       'content-type' => 'application/json; utf-8',
@@ -715,7 +715,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->assertFalse($object, 'Object was not created');
 
     // Test DELETE Object without the proper permissions.
-    $response = $this->httpDelete(MENU_ISLANDORA_REST_OBJECT . '/test:access');
+    $response = $this->httpDelete(ISLANDORA_REST_OBJECT_MENU . '/test:access');
     $expected = array(
       'code' => 403,
       'content-type' => 'application/json; utf-8',
@@ -724,7 +724,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->validateResponse($response, $expected);
 
     // Test GET Datastream without the proper permissions.
-    $path = str_replace('%', 'test:access', MENU_ISLANDORA_REST_DATASTREAM);
+    $path = str_replace('%', 'test:access', ISLANDORA_REST_DATASTREAM_MENU);
     $response = $this->httpGet($path . '/DC');
     $expected = array(
       'code' => 403,
@@ -767,7 +767,7 @@ class IslandoraRestTestCase extends IslandoraHttpRestTestCase {
     $this->assertFalse(empty($object['RELS-EXT']), 'Datastream was not deleted');
 
     // Test GET Relationship without the proper permissions.
-    $path = str_replace('%', 'test:access', MENU_ISLANDORA_REST_RELATIONSHIP);
+    $path = str_replace('%', 'test:access', ISLANDORA_REST_RELATIONSHIP_MENU);
     $response = $this->httpGet($path);
     $expected = array(
       'code' => 403,
