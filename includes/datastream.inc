@@ -129,7 +129,7 @@ function islandora_rest_datastream_put_response(array $parameters) {
  */
 function islandora_rest_datastream_post_response(array $parameters) {
   $object = $parameters['resource'];
-  $request = $parameters['request'];
+  $request = isset($parameters['request']) ? $parameters['request'] : array();
   $required = array('dsid');
   islandora_rest_require_parameters($request, $required);
   $file = array_shift($_FILES);
@@ -145,7 +145,13 @@ function islandora_rest_datastream_post_response(array $parameters) {
   $datastream->mimetype = isset($request['mimeType']) ? $request['mimeType'] : $mime_detect->getMimetype($file['name']);
   $datastream->checksumType = isset($request['checksumType']) ? $request['checksumType'] : variable_get('islandora_checksum_checksum_type', 'DISABLED');
   $datastream->setContentFromFile($file['tmp_name']);
-  if (!$object->ingestDatastream($datastream)) {
+  // XXX: The return of FALSE will be deprecated in 7.x-1.10, remove this after.
+  try {
+    if (!$object->ingestDatastream($datastream)) {
+      throw new Exception('Conflict: Datastream already exists', 409);
+    }
+  }
+  catch (DatastreamExistsException $e) {
     throw new Exception('Conflict: Datastream already exists', 409);
   }
   drupal_add_http_header('Status', 201);
