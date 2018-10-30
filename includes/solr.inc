@@ -19,7 +19,10 @@
  *   The un-encoded response containing the generated SOLR results.
  */
 function islandora_rest_solr_get_response(array $parameters) {
-  $query = $parameters['path']['query'];
+  module_load_include('inc', 'islandora_solr', 'includes/utilities');
+
+  // XXX: Replace '~slsh~' in query with '/' to get around path splitting.
+  $query = islandora_solr_restore_slashes($parameters['path']['query']);
   $request = $parameters['request'];
 
   $path_parts = parse_url(variable_get('islandora_solr_url', 'localhost:8080/solr'));
